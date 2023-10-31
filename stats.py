@@ -9,10 +9,8 @@ class statis():
     def __init__(self):
         self.BLACK = (0, 0, 0)
         self.font = pygame.font.Font(None, 25)
-        self.reset = 0
         self.start_time = 0
         self.end_time = 0
-        self.starter = 0
         self.flip = 1
         self.val_out = 0
         self.end_time = 0
