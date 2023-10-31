@@ -31,17 +31,14 @@ class statis():
             if (event.type == pygame.KEYDOWN) & (self.flip == 0):
                     self.end_time = output_time
                     self.val_out = 1
-                    print("h")
             elif (event.type == pygame.KEYUP) & (self.flip == 1): 
                     self.flip = 0
                     self.start_time = total_time
                     output_time = total_time - self.start_time
                     self.val_out = 2
-                    print("f")
             elif (event.type == pygame.KEYUP) & (self.flip == 0):
                     self.flip = 1
                     self.val_out = 0
-                    print("l")
         if self.val_out == 1:
             return(int(self.end_time))
         elif self.val_out == 2:
