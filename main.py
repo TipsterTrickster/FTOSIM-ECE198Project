@@ -26,18 +26,16 @@ while True:
         if pygame.key.get_pressed()[pygame.K_i] and event.type == pygame.KEYDOWN:
             fto.rRot(baseLayer)
 
-    print(fto.state)
     screen.fill("white")
     fto.display(screen)
 
-    pygame.display.flip()
 #    fto.rRot()
     #this is for the timer itself
-    stats.statis.timer(run1,screen)
+    stats.statis.timer(run1,0, screen)
     #this is to keep the log of past times on the screen
     stats.statis.print(run1,screen)
-    #not sure how important this sleep is here, but it seems to make the timer not work as well because it doesn't loop as fast, so the responsiveness for noticing a press isn't there
-    time.sleep(1)
+
+
     pygame.display.flip()
 
 
