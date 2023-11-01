@@ -30,7 +30,6 @@ while True:
     #this is to keep the log of past times on the screen
     stats.statis.print(run1,screen)
     #not sure how important this sleep is here, but it seems to make the timer not work as well because it doesn't loop as fast, so the responsiveness for noticing a press isn't there
-    #without the sleep, the timer works relatively well besides instantly resetting the timer to zero after you finish a solve. 
     time.sleep(1)
     pygame.display.flip()
 
