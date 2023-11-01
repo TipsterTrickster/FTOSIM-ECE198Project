@@ -3,15 +3,16 @@ from math import sin, cos, pi
 
 class FTO():
     def __init__(self, size):
-        self.puzzleSize = 50
+        self.puzzleSize = 150 / (size)
         self.size = size
         self.state = [[i] * self.size ** 2 for i in range(8)]
         # Color Scheme: U F R L B D BR BL
         self.colorScheme = ["#FFFFFF","#00FF2F","#FF0000","#FFFF00","#298FE8","#000000","#9D00FF","#FF7700"]
 
+
     # orientation, 0 -> U, 1 -> D, 2 -> R, 3 -> L where triangle starts at point and goes in orientation directon
     def triangle(self, surface, x, y, size, orientation, color): # general method for drawing triangles to screen
-        width = 10 # triangle border width
+        width = 30 / self.size # triangle border width
         sizex = size - width*cos((22.5 * pi) / 180) # sizes for triangle color
         sizey = size - width*sin((22.5 * pi) / 180)
 
@@ -70,69 +71,105 @@ class FTO():
     # U F R L B D BR BL
     """
     T / flip over to get to other faces
-      5 6 7 8 9
-        2 3 4    
-          1
+      4 5 6 7 8
+        1 2 3    
+          0
     """
-    def rRot(self):
+    def rRot(self, layers):
         size = self.size
-        c2 = (size - 1) ** 2
-        c3 = (size ** 2) - 1
 
         f1 = 0
         f2 = 1
         f3 = 6
+
+
+        for n in range(layers * 2):    
+            for j, k in zip(range((n + 1) // 2, size), range(size - 1, (n + 1) // 2 - 1, -1)):
+                buff = self.state[f1][((j + 1) ** 2) - (n + 1)]
+                self.state[f1][((j + 1) ** 2) - (n + 1)] = self.state[f2][k ** 2 + n]
+                self.state[f2][k ** 2 + n] = self.state[f3][((size - (n + 2) // 2) ** 2) + 2 * j - n]
+                self.state[f3][((size - (n + 2) // 2) ** 2) + 2 * j - n] = buff
+
+
+        f4 = 3
+        f5 = 5
+        f6 = 4
+
+        for j in range(0, layers):
+            for i, k in zip(range(j + 1), range(j, -1, -1)):
+                buff = self.state[f4][((j + 1) ** 2 - 1) - i * 2]
+                self.state[f4][((j + 1) ** 2 - 1) - i * 2] = self.state[f5][(size - j + i) ** 2 - (2 * i + 1)]
+                self.state[f5][(size - j + i) ** 2 - (2 * i + 1)] = self.state[f6][(size - 1 - j + i) ** 2 + 2 * i]
+                self.state[f6][(size - 1 - j + i) ** 2 + 2 * i] = buff
+                if i > 0 and j > 0:
+                    buff = self.state[f4][((j + 1) ** 2 - 1) - i * 2 + 1]
+                    self.state[f4][((j + 1) ** 2 - 1) - i * 2 + 1] = self.state[f5][(size - j + i) ** 2 - (2 * i + 1) + 1]
+                    self.state[f5][(size - j + i) ** 2 - (2 * i + 1) + 1] = self.state[f6][(size - 1 - j + i) ** 2 + 2 * i - 1]
+                    self.state[f6][(size - 1 - j + i) ** 2 + 2 * i - 1] = buff
+
+
+        f1 = f2 = f3 = 2
+        for n in range((size // 2) * 2):    
+            for j, k in zip(range((n + 1) // 2, size), range(size - 1, (n + 1) // 2 - 1, -1)):
+                buff = self.state[f3][((size - (n + 2) // 2) ** 2) + 2 * k - n]
+                self.state[f3][((size - (n + 2) // 2) ** 2) + 2 * k - n] = self.state[f2][k ** 2 + n]
+                self.state[f2][k ** 2 + n] = self.state[f1][((j + 1) ** 2) - (n + 1)]
+                self.state[f1][((j + 1) ** 2) - (n + 1)] = buff
         
-        for j, k in zip(range(0, self.size), range(self.size - 1, -1, -1)):
-            buff = self.state[f1][((j + 1) ** 2) - 1]
-            self.state[f1][((j + 1) ** 2) - 1] = self.state[f2][k ** 2]
-            self.state[f2][k ** 2] = self.state[f3][c2 + 2 * k]
-            self.state[f3][c2 + 2 * k] = buff
-        
-        for j, k in zip(range(1, self.size), range(self.size - 1, 0, -1)):
-            buff = self.state[f1][((j + 1) ** 2) - 2]
-            self.state[f1][((j + 1) ** 2) - 2] = self.state[f2][(k ** 2) + 1]
-            self.state[f2][(k ** 2) + 1] = self.state[f3][c2 + 2 * k - 1]
-            self.state[f3][c2 + 2 * k - 1] = buff
-        
-        buff = self.state[3][0]
-        self.state[3][0] = self.state[5][c3]
-        self.state[5][c3] = self.state[4][c2]
-        self.state[4][c2] = buff
+        if size % 2:
+            buff = self.state[f1][(size // 2) ** 2]
+            self.state[f1][(size // 2) ** 2] = self.state[f1][(size // 2 + 1) ** 2 - 1]
+            self.state[f1][(size // 2 + 1) ** 2 - 1] = self.state[f1][(size - 1) ** 2 + (size - 1)]
+            self.state[f1][(size - 1) ** 2 + (size - 1)] = buff
 
-        for j, k in zip(range(0, self.size), range(self.size - 1, -1, -1)):
-            buff = self.state[f1][((j + 1) ** 2) - 1]
-            self.state[f1][((j + 1) ** 2) - 1] = self.state[f2][k ** 2]
-            self.state[f2][k ** 2] = self.state[f3][c2 + 2 * k]
-            self.state[f3][c2 + 2 * k] = buff
-        
-        for j, k in zip(range(1, self.size), range(self.size - 1, 0, -1)):
-            buff = self.state[f1][((j + 1) ** 2) - 2]
-            self.state[f1][((j + 1) ** 2) - 2] = self.state[f2][(k ** 2) + 1]
-            self.state[f2][(k ** 2) + 1] = self.state[f3][c2 + 2 * k - 1]
-            self.state[f3][c2 + 2 * k - 1] = buff
+        else:
+            buff = self.state[f1][(size // 2) ** 2 + 1]
+            self.state[f1][(size // 2) ** 2 + 1] = self.state[f1][(size // 2 + 1) ** 2 - 2]
+            self.state[f1][(size // 2 + 1) ** 2 - 2] = self.state[f1][(size - 1) ** 2 + (size - 1)]
+            self.state[f1][(size - 1) ** 2 + (size - 1)] = buff
 
+        if layers == size:
+            f1 = f2 = f3 = 7
+            for n in range((size // 2) * 2):    
+                for j, k in zip(range((n + 1) // 2, size), range(size - 1, (n + 1) // 2 - 1, -1)):
+                    buff = self.state[f1][((j + 1) ** 2) - (n + 1)]
+                    self.state[f1][((j + 1) ** 2) - (n + 1)] = self.state[f2][k ** 2 + n]
+                    self.state[f2][k ** 2 + n] = self.state[f3][((size - (n + 2) // 2) ** 2) + 2 * k - n]
+                    self.state[f3][((size - (n + 2) // 2) ** 2) + 2 * k - n] = buff
+            
+            if size % 2:
+                buff = self.state[f1][(size - 1) ** 2 + (size - 1)]
+                self.state[f1][(size - 1) ** 2 + (size - 1)] = self.state[f1][(size // 2 + 1) ** 2 - 1]
+                self.state[f1][(size // 2 + 1) ** 2 - 1] = self.state[f1][(size // 2) ** 2]
+                self.state[f1][(size // 2) ** 2] = buff
 
-        # 0 4 8
-        # 0 9 15 # corner
-        # 0 16 24
-        
-        # 1 6 3 
-        # 1 11 8 # edge
-        # 4 13 3
+            else:
+                buff = self.state[f1][(size - 1) ** 2 + (size - 1)]
+                self.state[f1][(size - 1) ** 2 + (size - 1)] = self.state[f1][(size // 2 + 1) ** 2 - 2]
+                self.state[f1][(size // 2 + 1) ** 2 - 2] = self.state[f1][(size // 2) ** 2 + 1]
+                self.state[f1][(size // 2) ** 2 + 1] = buff
 
-        # 1 18 15
-        # 4 20 8
-        # 9 22 3
+    def roRot(self):
+        self.rRot(self.size)
+    
+    def tRot(self):
+        for j in range(self.size):
+            for i in range(j * 2 + 1):
+                buff = self.state[0][(j ** 2) + i]
+                self.state[0][(j ** 2) + i] = self.state[3][((j + 1) ** 2) - (i + 1)]
+                self.state[3][((j + 1) ** 2) - (i + 1)] = self.state[1][(j ** 2) + i]
+                self.state[1][(j ** 2) + i] = self.state[2][((j + 1) ** 2) - (i + 1)]
+                self.state[2][((j + 1) ** 2) - (i + 1)] = buff
 
-        # 2 5 7
-        # 2 10 14 # triangle
-        # 5 12 7
+                buff = self.state[4][(j ** 2) + i]
+                self.state[4][(j ** 2) + i] = self.state[7][((j + 1) ** 2) - (i + 1)]
+                self.state[7][((j + 1) ** 2) - (i + 1)] = self.state[5][(j ** 2) + i]
+                self.state[5][(j ** 2) + i] = self.state[6][((j + 1) ** 2) - (i + 1)]
+                self.state[6][((j + 1) ** 2) - (i + 1)] = buff
 
-        # 2 17 30
-        # 5 19 14
-        # 10 21 7
-
-        # 6
-        # 12
-        # 6 11 13
+    def uRot(self, layers):
+        self.tRot()
+        self.rRot(layers)
+        self.tRot()
+        self.tRot()
+        self.tRot()
