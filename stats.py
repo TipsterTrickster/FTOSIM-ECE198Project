@@ -8,13 +8,22 @@ class statis():
     def __init__(self):
         self.BLACK = (0, 0, 0)
         self.font = pygame.font.Font(None, 40)
+        #triggers when an attempt is started to grab the current time as a 0 point
         self.start_time = 0
+        #triggers when a solve is completed as the difference between current time and start time
         self.end_time = 0
+        #used to flip between the timer running and timer stopped states
         self.flip = 1
+        #based on the the flip state, dictates what is actually returned from the clock method
         self.val_out = 0
+        #list of times from previous solves
         self.sorted_time = []
+        #iterates through for the number of items in the sorted_time list, determines how they're displayed on the screen
         self.item = 0
+        #counts how many items are in the completed run list to keep that at 10 or below
         self.counter = 0
+        #counts the number of attempts for every time a new one is added to the list and numbers the times on the display
+        self.index = 0
     #this method tracks the overall time in the background to use when the spacebar is pressed to start and stop the timer
     def clock(self,dimen):
         total_time = pygame.time.get_ticks()
@@ -22,7 +31,6 @@ class statis():
         for event in pygame.event.get():
             if (event.type == pygame.KEYDOWN) & (self.flip == 0):
                     self.end_time = output_time
-                    #this variable tracks how many times have been added to the past times log on the right and starts removing them when you reach over 10 solves
                     self.counter += 1
                     if self.counter > 10:
                         self.sorted_time.pop(0)
@@ -41,13 +49,13 @@ class statis():
             return(int(output_time))
         else:
             return(int(0))
-    #this method puts the time returned from the clock method into the correct formatting and renders it on the screen  
+    #this method puts the time returned from the clock method into the correct formatting and displays it on the screen  
     def timer(self,dimen):
         time = self.clock(dimen)
         ms = time % 1000
         seconds = (time // 1000) % 60
         minutes = (time//60000)
-        output_string = "Time: {0:02}:{1:02}:{2:03}".format(minutes, seconds, ms)
+        output_string = "Time: {0:02}:{1:02}.{2:03}".format(minutes, seconds, ms)
         text = self.font.render(output_string, True, self.BLACK)
         dimen.blit(text, [20, 20])
         pass
@@ -56,7 +64,8 @@ class statis():
         ms = solve_time % 1000
         seconds = (solve_time // 1000) % 60
         minutes = (solve_time//60000)
-        printed = "Time: {0:02}:{1:02}:{2:03}".format(minutes,seconds,ms)
+        self.index+=1
+        printed = "{3:01}. {0:02}:{1:02}.{2:03}".format(minutes,seconds,ms,self.index)
         self.sorted_time.append(printed)  
         pass
     #this method takes the list of previous times from the leaderboard method and actually renders them on the screen. I didn't combine the two because
@@ -65,8 +74,8 @@ class statis():
     def print(self,dimen):
         self.item = 0
         if len(self.sorted_time) > 0:
-            for items in range(self.counter):
-                text = self.font.render(self.sorted_time[self.item], True, self.BLACK)
+            for items in range(self.counter,0,-1):
+                text = self.font.render(self.sorted_time[self.counter - self.item - 1], True, self.BLACK)
                 dimen.blit(text, [1000, 20+(self.item*25)])
                 self.item+=1
                 if self.item > 10:
