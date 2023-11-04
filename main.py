@@ -14,26 +14,31 @@ pygame.init()
 width = 1280
 height = 720
 screen = pygame.display.set_mode((width, height))
-fto = FTO(3)
+# pygame.key.set_repeat(400,1000)
+size = 3
+fto = FTO(size)
 controls = Controls(fto)
-baseLayer = 1
+
 
 run1 = stats.statis()
+
+key_states = {}
 
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
-        if pygame.key.get_pressed()[pygame.K_i] and event.type == pygame.KEYDOWN:
-            fto.rRot(baseLayer)
+
+        if event.type == pygame.KEYDOWN:
+            controls.control(event)
+
 
     screen.fill("white")
     fto.display(screen)
 
-#    fto.rRot()
-    #this is for the timer itself
-    stats.statis.timer(run1,0, screen)
-    #this is to keep the log of past times on the screen
-    stats.statis.print(run1,screen)
+    # #this is for the timer itself
+    # stats.statis.timer(run1,0, screen)
+    # #this is to keep the log of past times on the screen
+    # stats.statis.print(run1,screen)
 
 
     pygame.display.flip()

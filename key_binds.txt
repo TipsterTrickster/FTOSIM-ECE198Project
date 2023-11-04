@@ -1,0 +1,26 @@
+R, 1: K_i
+Rp, 1: K_k
+U, 1: K_j
+Up, 1: K_f
+F, 1: K_h
+Fp, 1: K_g
+L, 1: K_d
+Lp, 1: K_e
+R, 2: K_u
+Rp, 2: K_m
+B, 1: K_w
+Bp, 1: K_o
+BL, 1: K_1
+BLp, 1: K_2
+BR, 1: K_3
+BRp, 1: K_4
+Ro: K_y
+Rop: K_n
+Ro: K_t
+Rop: K_b
+Uo: K_SEMICOLON
+Uop: K_a
+T: K_p
+Tp: K_q
+D, 1: K_s
+Dp, 1: K_l

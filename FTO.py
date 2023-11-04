@@ -3,11 +3,22 @@ from math import sin, cos, pi
 
 class FTO():
     def __init__(self, size):
-        self.puzzleSize = 150 / (size)
+        self.puzzleSize = 150 / 3
         self.size = size
         self.state = [[i] * self.size ** 2 for i in range(8)]
         # Color Scheme: U F R L B D BR BL
         self.colorScheme = ["#FFFFFF","#00FF2F","#FF0000","#FFFF00","#298FE8","#000000","#9D00FF","#FF7700"]
+
+
+    @property
+    def size(self):
+        return self._size
+    
+    @size.setter
+    def size(self, size):
+        self._size = size
+        self.puzzleSize = 150 / size
+        self.state = [[i] * size ** 2 for i in range(8)]
 
 
     # orientation, 0 -> U, 1 -> D, 2 -> R, 3 -> L where triangle starts at point and goes in orientation directon
@@ -75,7 +86,7 @@ class FTO():
         1 2 3    
           0
     """
-    def rRot(self, layers):
+    def R(self, layers):
         size = self.size
 
         f1 = 0
@@ -97,14 +108,14 @@ class FTO():
 
         for j in range(0, layers):
             for i, k in zip(range(j + 1), range(j, -1, -1)):
-                buff = self.state[f4][((j + 1) ** 2 - 1) - i * 2]
-                self.state[f4][((j + 1) ** 2 - 1) - i * 2] = self.state[f5][(size - j + i) ** 2 - (2 * i + 1)]
-                self.state[f5][(size - j + i) ** 2 - (2 * i + 1)] = self.state[f6][(size - 1 - j + i) ** 2 + 2 * i]
+                buff = self.state[f4][((j + 1) ** 2 - 1) - k * 2]
+                self.state[f4][((j + 1) ** 2 - 1) - k * 2] = self.state[f5][(size - j + k) ** 2 - (2 * k + 1)]
+                self.state[f5][(size - j + k) ** 2 - (2 * k + 1)] = self.state[f6][(size - 1 - j + i) ** 2 + 2 * i]
                 self.state[f6][(size - 1 - j + i) ** 2 + 2 * i] = buff
                 if i > 0 and j > 0:
-                    buff = self.state[f4][((j + 1) ** 2 - 1) - i * 2 + 1]
-                    self.state[f4][((j + 1) ** 2 - 1) - i * 2 + 1] = self.state[f5][(size - j + i) ** 2 - (2 * i + 1) + 1]
-                    self.state[f5][(size - j + i) ** 2 - (2 * i + 1) + 1] = self.state[f6][(size - 1 - j + i) ** 2 + 2 * i - 1]
+                    buff = self.state[f4][((j + 1) ** 2 - 1) - (k + 1) * 2 + 1]
+                    self.state[f4][((j + 1) ** 2 - 1) - (k + 1) * 2 + 1] = self.state[f5][(size - j + (k + 1)) ** 2 - (2 * (k + 1) + 1) + 1]
+                    self.state[f5][(size - j + (k + 1)) ** 2 - (2 * (k + 1) + 1) + 1] = self.state[f6][(size - 1 - j + i) ** 2 + 2 * i - 1]
                     self.state[f6][(size - 1 - j + i) ** 2 + 2 * i - 1] = buff
 
 
@@ -149,10 +160,18 @@ class FTO():
                 self.state[f1][(size // 2 + 1) ** 2 - 2] = self.state[f1][(size // 2) ** 2 + 1]
                 self.state[f1][(size // 2) ** 2 + 1] = buff
 
-    def roRot(self):
-        self.rRot(self.size)
+    def Rp(self, layers):
+        self.R(layers)
+        self.R(layers)
+
+    def Ro(self):
+        self.R(self.size)
     
-    def tRot(self):
+    def Rop(self):
+        self.Ro()
+        self.Ro()
+
+    def T(self):
         for j in range(self.size):
             for i in range(j * 2 + 1):
                 buff = self.state[0][(j ** 2) + i]
@@ -167,9 +186,84 @@ class FTO():
                 self.state[5][(j ** 2) + i] = self.state[6][((j + 1) ** 2) - (i + 1)]
                 self.state[6][((j + 1) ** 2) - (i + 1)] = buff
 
-    def uRot(self, layers):
-        self.tRot()
-        self.rRot(layers)
-        self.tRot()
-        self.tRot()
-        self.tRot()
+    def Tp(self):
+        self.T()
+        self.T()
+        self.T()
+
+    def U(self, layers):
+        self.T()
+        self.R(layers)
+        self.Tp()
+
+    def Up(self, layers):
+        self.U(layers)
+        self.U(layers)
+
+    def F(self, layers):
+        self.Ro()
+        self.U(layers)
+        self.Rop()
+
+    def Fp(self, layers):
+        self.F(layers)
+        self.F(layers)
+
+    def L(self, layers):
+        self.T()
+        self.T()
+        self.R(layers)
+        self.T()
+        self.T()
+
+    def Lp(self, layers):
+        self.L(layers)
+        self.L(layers)
+
+    def D(self, layers):
+        self.Ro()
+        self.L(layers)
+        self.Rop()
+    
+    def Dp(self, layers):
+        self.D(layers)
+        self.D(layers)
+    
+    def B(self, layers):
+        self.Rop()
+        self.L(layers)
+        self.Ro()
+    
+    def Bp(self, layers):
+        self.Rop()
+        self.Lp(layers)
+        self.Ro()
+
+    def BR(self, layers):
+        self.Rop()
+        self.U(layers)
+        self.Ro()
+
+    def BRp(self, layers):
+        self.Rop()
+        self.Up(layers)
+        self.Ro()
+
+    def BL(self, layers):
+        self.T()
+        self.B(layers)
+        self.Tp()
+
+    def BLp(self, layers):
+        self.T()
+        self.Bp(layers)
+        self.Tp()
+
+    def Uo(self):
+        self.Rop()
+        self.T()
+        self.T()
+
+    def Uop(self):
+        self.Uo()       
+        self.Uo()       
