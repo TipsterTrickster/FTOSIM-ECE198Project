@@ -29,12 +29,13 @@ class statis():
         self.avgof5 = 0
         self.index = 0 #counts the number of attempts for every time a new one is added to the list and numbers the times on the display
         self.movecount = 0
-        self.data_array = {"Time":[],"Moves":[],"Scramble":[],"Solution":[]}
+        self.data_array = {"Time":[],"Moves":[],"Reconstruction":[]}
         self.moveslist = []
 
 
         self.scramble = [] # stores scramble for reconstruction
         self.solution = [] # stores solution for reconstruction
+        self.reconstruction = "https://alpha.twizzle.net/explore/?puzzle=FTO&alg="
   
 
     def check_solved(self,cube_status):
@@ -46,12 +47,13 @@ class statis():
     
     #this method tracks the overall time in the background to use when the cube is scrambled
     def clock(self,cube_status,dimen):
+        # self.fto.scrambled = True # uncomment to test without having to scramble and solve
         total_time = pygame.time.get_ticks()
         output_time = total_time - self.start_time
 
         if self.started == 0: # controls function will change self.started to 1
             self.start_time = total_time # constantly update starttime
-            return 0
+            return self.end_time
         elif self.check_solved(self.fto.state) == False and self.started == 1:
             output_time = total_time - self.start_time
             return output_time
@@ -69,7 +71,10 @@ class statis():
                 self.started = 0
                 self.fto.scrambled = False
                 return self.end_time
-                
+
+        else:
+            return self.end_time
+    
     #this method puts the time returned from the clock method into the correct formatting and displays it on the screen  
     def timer(self,cube_status,dimen):
         time = self.clock(cube_status,dimen)
@@ -89,8 +94,34 @@ class statis():
         time_format = "{0:02}:{1:02}.{2:03}".format(minutes,seconds,ms)
         self.data_array["Time"].append(time_format)
         self.data_array["Moves"].append(movecount)
-        self.data_array["Scramble"].append(' '.join(self.scramble))
-        self.data_array["Solution"].append(' '.join(self.solution))
+        for move in self.scramble:
+            self.reconstruction += move[-1]
+            self.reconstruction += move[0].lower()
+            if "BR" in move or "BL" in move:
+                self.reconstruction += move[1].lower()
+            if "p" in move:
+                self.reconstruction += "%27"
+            self.reconstruction += "+"
+        self.reconstruction += "%2F%2F+scramble+%0A%0A"
+
+        for move in self.solution:
+            if "T" in move:
+                self.reconstruction += move[0]
+            elif "o" in move:
+                self.reconstruction += move[0]
+                self.reconstruction += "v"
+            else:
+                self.reconstruction += move[-1]
+                self.reconstruction += move[0].lower()
+                if "BR" in move or "BL" in move:
+                    self.reconstruction += move[1].lower()
+
+            if "p" in move:
+                self.reconstruction += "%27"
+            self.reconstruction += "+"
+
+        self.data_array["Reconstruction"].append(self.reconstruction)
+        # self.data_array["Solution"].append(' '.join(self.solution))
         df = pandas.DataFrame(self.data_array)
         df.to_csv(os.path.join(r'solve_data.csv')) 
         printed = "{3:01}. {0:02}:{1:02}.{2:03} | {4:01} Moves".format(minutes,seconds,ms,self.index,movecount)
@@ -141,7 +172,7 @@ class statis():
                 if self.item > 10:
                     self.item = 10 
 
-    def average(self,solve_time,movecount):
+    def average(self, solve_time, movecount):
         avg1 = 12
         avg2 = 5
         self.rawtimes.append(solve_time)

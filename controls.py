@@ -24,8 +24,9 @@ class Controls():
         moves = ["R", "Rp", "U", "Up", "F", "Fp", "L", "Lp", "D", "Dp", "B", "Bp", "BL", "BLp", "BR", "BRp"]
         for i in range(self.fto.size * 20):
             move = random.choice(moves)
-            getattr(self.fto, move)(random.randint(1, self.fto.size // 2))
-            self.stats.scramble.append(move)
+            layers = random.randint(1, self.fto.size // 2)
+            getattr(self.fto, move)(layers)
+            self.stats.scramble.append(move + str(layers))
         self.fto.scrambled = True
 
     def control(self, event): # controls for puzzle
@@ -36,7 +37,7 @@ class Controls():
                     move, layers = move.split(", ")
                     getattr(self.fto, move)(int(layers))
                     self.stats.movecount += 1
-                    self.stats.solution.append(move)
+                    self.stats.solution.append(move + str(layers))
                     if self.fto.scrambled == True:
                         self.stats.started = 1
                 elif "scramble" in move:

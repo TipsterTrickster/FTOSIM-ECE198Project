@@ -11,7 +11,6 @@ pygame.init()
 width = 1280
 height = 720
 screen = pygame.display.set_mode((width, height))
-# pygame.key.set_repeat(400,1000)
 size = 3
 fto = FTO(size)
 

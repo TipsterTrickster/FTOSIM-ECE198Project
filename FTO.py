@@ -155,10 +155,10 @@ class FTO():
                 self.state[f1][(size // 2) ** 2] = buff
 
             else:
-                buff = self.state[f1][(size - 1) ** 2 + (size - 1)]
-                self.state[f1][(size - 1) ** 2 + (size - 1)] = self.state[f1][(size // 2 + 1) ** 2 - 2]
-                self.state[f1][(size // 2 + 1) ** 2 - 2] = self.state[f1][(size // 2) ** 2 + 1]
-                self.state[f1][(size // 2) ** 2 + 1] = buff
+                buff = self.state[f1][(size // 2) ** 2 + 1]
+                self.state[f1][(size // 2) ** 2 + 1] = self.state[f1][(size // 2 + 1) ** 2 - 2]
+                self.state[f1][(size // 2 + 1) ** 2 - 2] = self.state[f1][(size - 1) ** 2 + (size - 1)]
+                self.state[f1][(size - 1) ** 2 + (size - 1)] = buff
 
     def Rp(self, layers): # perfroms counterclockwise R move on FTO
         self.R(layers)
