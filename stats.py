@@ -3,7 +3,6 @@ import pandas
 pygame.init()
 import os
 import math
-from FTO import FTO
 from pathlib import Path
 
 
@@ -31,6 +30,8 @@ class statis():
         self.index = 0 #counts the number of attempts for every time a new one is added to the list and numbers the times on the display
         self.movecount = 0
         self.data_array = {"Time":[],"Moves":[],"Scramble":[],"Solution":[]}
+        self.moveslist = []
+
 
         self.scramble = [] # stores scramble for reconstruction
         self.solution = [] # stores solution for reconstruction
@@ -63,7 +64,7 @@ class statis():
                 if self.avgof12 > 12:
                     self.avgof12 = 12
                 self.leaderboard(self.end_time,self.movecount)
-                self.average(self.end_time)
+                self.average(self.end_time, self.movecount)
                 self.movecount = 0
                 self.started = 0
                 self.fto.scrambled = False
@@ -108,27 +109,27 @@ class statis():
         for number in ranges:
             for i in range(len(ranges)):
                 titles = ["Average of {0}".format(number),"Fastest of {0}".format(number)]
-                text = self.font.render(titles[i], True, self.BLACK)
+                text = self.font.render(titles[i], True, "Black")
                 dimen.blit(text, [20, y_height+(50*count)])
                 count += 1
-        text = self.font.render("Fastest Overall Time", True, self.BLACK)
+        text = self.font.render("Fastest Overall Time", True, "Black")
         dimen.blit(text, [20, y_height - 50])
         if len(self.sorted_time) > 0:
-            text = self.font.render(self.fastestoverall, True, self.BLACK)
+            text = self.font.render(self.fastestoverall, True, "Black")
             dimen.blit(text, [20, y_height - 25])
             if self.avgof12 >= 5:
-                text = self.font.render(self.formatted_avgof5, True, self.BLACK)
+                text = self.font.render(self.formatted_avgof5, True, "Black")
                 dimen.blit(text, [20, y_height + 25])
-                text = self.font.render(self.fastestof5, True, self.BLACK)
+                text = self.font.render(self.fastestof5, True, "Black")
                 dimen.blit(text, [20, y_height + 75])
             else:
                 text = self.font.render("DNF", True, "Black")
                 dimen.blit(text, [20, y_height + 25])
 
             if self.avgof12 == 12:
-                text = self.font.render(self.formatted_avgof12, True, self.BLACK)
+                text = self.font.render(self.formatted_avgof12, True, "Black")
                 dimen.blit(text, [20, y_height + 125])
-                text = self.font.render(self.fastestof12, True, self.BLACK)
+                text = self.font.render(self.fastestof12, True, "Black")
                 dimen.blit(text, [20, y_height + 175])
             else:
                 text = self.font.render("DNF", True, "Black")
