@@ -73,6 +73,7 @@ class statis():
                     self.avgof12 = 12
                 self.leaderboard(self.end_time,self.movecount)
                 self.average(self.end_time, self.movecount)  
+                self.movecount = 0
                 self.started = 0
                 self.fto.scrambled = False
                 return self.end_time
@@ -130,7 +131,6 @@ class statis():
         df = pandas.DataFrame(self.data_array)
         df.to_csv(os.path.join(r'solve_data.csv')) 
         printed = "{3:01}. {0:02}:{1:02}.{2:03} | {4:01} Moves".format(minutes,seconds,ms,self.index,movecount)
-        self.movecount = 0
         self.sorted_time.append(printed) 
         pass
     
