@@ -1,29 +1,29 @@
-scramble: K_BACKQUOTE
-increase_size: K_1
-decrease_size: K_2
-R, 1: K_i
-Rp, 1: K_k
-U, 1: K_j
-Up, 1: K_f
-F, 1: K_h
-Fp, 1: K_g
-L, 1: K_d
-Lp, 1: K_e
-R, 2: K_u
-Rp, 2: K_m
-B, 1: K_w
-Bp, 1: K_o
-BL, 1: K_c
-BLp, 1: K_3
-BR, 1: K_8
-BRp, 1: K_COMMA
-Ro: K_y
-Rop: K_n
-Ro: K_t
-Rop: K_b
-Uo: K_SEMICOLON
-Uop: K_a
-T: K_p
-Tp: K_q
-D, 1: K_s
-Dp, 1: K_l
+scramble: `
+increase_size: +
+decrease_size: -
+R, 1: i
+Rp, 1: k
+U, 1: j
+Up, 1: f
+F, 1: h
+Fp, 1: g
+L, 1: d
+Lp, 1: e
+R, 2: u
+Rp, 2: m
+B, 1: w
+Bp, 1: o
+BL, 1: c
+BLp, 1: 3
+BR, 1: 8
+BRp, 1: ,
+Ro: y
+Rop: n
+Ro: t
+Rop: b
+Uo: ;
+Uop: a
+T: p
+Tp: q
+D, 1: s
+Dp, 1: l

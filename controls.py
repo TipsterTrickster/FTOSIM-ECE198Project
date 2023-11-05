@@ -31,8 +31,7 @@ class Controls():
 
     def control(self, event): # controls for puzzle
         for key_name, move in self.key_mapping.items():
-            key_code = getattr(pygame, key_name)
-            if event.key == key_code:
+            if event.unicode == key_name:
                 if "," in move:
                     move, layers = move.split(", ")
                     getattr(self.fto, move)(int(layers))
