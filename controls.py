@@ -1,14 +1,14 @@
 import pygame
 import random
 from pathlib import Path
-from stats import statis
 
 
 
 
 class Controls():
-    def __init__(self, FTO):
+    def __init__(self, FTO, Stats):
         self.fto = FTO
+        self.stats = Stats
         self.key_mapping = {}
         self.scrambling = False
 
@@ -19,10 +19,13 @@ class Controls():
                 self.key_mapping[key] = move
 
     def scramble(self): # method to scramble the puzzle using random moves
+        self.stats.scramble = []
+        self.stats.solution = []
         moves = ["R", "Rp", "U", "Up", "F", "Fp", "L", "Lp", "D", "Dp", "B", "Bp", "BL", "BLp", "BR", "BRp"]
         for i in range(self.fto.size * 20):
-            getattr(self.fto, random.choice(moves))(random.randint(1, self.fto.size // 2))
-            print(i)
+            move = random.choice(moves)
+            getattr(self.fto, move)(random.randint(1, self.fto.size // 2))
+            self.stats.scramble.append(move)
 
     def control(self, event): # controls for puzzle
         for key_name, move in self.key_mapping.items():
@@ -31,6 +34,7 @@ class Controls():
                 if "," in move:
                     move, layers = move.split(", ")
                     getattr(self.fto, move)(int(layers))
+                    self.stats.solution.append(move)
                 elif "scramble" in move:
                     if not self.scrambling:
                         self.scrambling = True
@@ -41,5 +45,6 @@ class Controls():
                     self.fto.size -= 1
                 else:
                     getattr(self.fto, move)()
+                    self.stats.solution.append(move)
     
 

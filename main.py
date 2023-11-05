@@ -1,11 +1,10 @@
 import pygame
 import numpy as np
 import pandas as pd
-import time
 import sys
 from FTO import FTO
 from controls import Controls
-import stats
+from stats import statis
 
 # pygame setup
 pygame.init()
@@ -15,9 +14,10 @@ screen = pygame.display.set_mode((width, height))
 # pygame.key.set_repeat(400,1000)
 size = 3
 fto = FTO(size)
-controls = Controls(fto)
 
-run1 = stats.statis()
+run1 = statis()
+
+controls = Controls(fto, run1)
 
 while True:
     for event in pygame.event.get():
