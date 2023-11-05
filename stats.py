@@ -103,27 +103,32 @@ class statis():
     def print(self,dimen):
         self.item = 0
         y_height = 450
+        ranges = [5,12]
+        count = 0
+        for number in ranges:
+            for i in range(len(ranges)):
+                titles = ["Average of {0}".format(number),"Fastest of {0}".format(number)]
+                text = self.font.render(titles[i], True, self.BLACK)
+                dimen.blit(text, [20, y_height+(50*count)])
+                count += 1
+        text = self.font.render("Fastest Overall Time", True, self.BLACK)
+        dimen.blit(text, [20, y_height - 50])
         if len(self.sorted_time) > 0:
-            text = self.font.render("Average of 12", True, "Black")
-            dimen.blit(text, [20, y_height])
-            text = self.font.render("Fastest of 12", True, "Black")
-            dimen.blit(text, [20, y_height + 50])
-            if self.avgof12 == 12:
-                text = self.font.render(self.formatted_avgof12, True, "Black")
+            text = self.font.render(self.fastestoverall, True, self.BLACK)
+            dimen.blit(text, [20, y_height - 25])
+            if self.avgof12 >= 5:
+                text = self.font.render(self.formatted_avgof5, True, self.BLACK)
                 dimen.blit(text, [20, y_height + 25])
-                text = self.font.render(self.fastestof12, True, "Black")
+                text = self.font.render(self.fastestof5, True, self.BLACK)
                 dimen.blit(text, [20, y_height + 75])
             else:
                 text = self.font.render("DNF", True, "Black")
                 dimen.blit(text, [20, y_height + 25])
-            text = self.font.render("Average of 5", True, "Black")
-            dimen.blit(text, [20, y_height + 100])
-            text = self.font.render("Fastest of 5", True, "Black")
-            dimen.blit(text, [20, y_height + 150])
-            if self.avgof12 >= 5:
-                text = self.font.render(self.formatted_avgof5, True, "Black")
+
+            if self.avgof12 == 12:
+                text = self.font.render(self.formatted_avgof12, True, self.BLACK)
                 dimen.blit(text, [20, y_height + 125])
-                text = self.font.render(self.fastestof5, True, "Black")
+                text = self.font.render(self.fastestof12, True, self.BLACK)
                 dimen.blit(text, [20, y_height + 175])
             else:
                 text = self.font.render("DNF", True, "Black")
@@ -135,33 +140,54 @@ class statis():
                 if self.item > 10:
                     self.item = 10 
 
-    def average(self,solve_time):
+    def average(self,solve_time,movecount):
+        avg1 = 12
+        avg2 = 5
         self.rawtimes.append(solve_time)
+        self.moveslist.append(movecount)
+        self.fastestoverall = self.uniform_avg(len(self.rawtimes))[0]
         if self.avgof12 == 12:
-            self.formatted_avgof12 = self.uniform_avg(12)[1]
-            self.fastestof12 = self.uniform_avg(12)[0]
+            self.formatted_avgof12 = self.uniform_avg(avg1)[1]
+            self.fastestof12 = self.uniform_avg(avg1)[0]
         if self.avgof12 >= 5:
-            self.formatted_avgof5 = self.uniform_avg(5)[1]
-            self.fastestof5 = self.uniform_avg(5)[0]
+            self.formatted_avgof5 = self.uniform_avg(avg2)[1]
+            self.fastestof5 = self.uniform_avg(avg2)[0]
 
     def uniform_avg(self,ranges):
         avgtotal = 0
-        averaged_values = []
+        avgmoves = 0
+        averaged_times = []
+        movesinrange = []
+        pairs = []
         for solves in range(ranges):
             avgtotal = avgtotal + self.rawtimes[-solves]
-            averaged_values.append(self.rawtimes[-solves])
-        averaged_values = sorted(averaged_values)
-        maxmin = averaged_values[0]+averaged_values[ranges-1]
-        fastestinrange ="Time: {2:02}:{1:02}.{0:03}".format(self.time_formatter(averaged_values[0])[0],self.time_formatter(averaged_values[0])[1],self.time_formatter(averaged_values[0])[2])
-        averaged_values.clear()
-        avgtotal = avgtotal - maxmin
-        avgtotal = avgtotal/(ranges-2)
-        avgtotal = round(avgtotal)
-        formatted_avg = "Time: {2:02}:{1:02}.{0:03}".format(self.time_formatter(avgtotal)[0],self.time_formatter(avgtotal)[1],self.time_formatter(avgtotal)[2])
+            avgmoves = avgmoves + self.moveslist[-solves]
+            averaged_times.append(self.rawtimes[-solves])
+            movesinrange.append(self.moveslist[-solves])
+        pairs.append(averaged_times)
+        pairs.append(movesinrange)
+        averaged_times = sorted(averaged_times)
+        for i in range(ranges):
+            if pairs[0][i] == averaged_times[0]:
+                fastesttimemoves = pairs[1][i]
+            if pairs[0][i] == averaged_times[ranges-1]:
+                slowesttimemoves = pairs[1][i]
+        maxmin = averaged_times[0]+averaged_times[ranges-1]
+        if ranges > 2:
+            avgmoves = avgmoves - slowesttimemoves - fastesttimemoves
+            avgmoves = avgmoves/(ranges-2)
+            avgmoves = math.ceil(avgmoves)
+            avgtotal = avgtotal - maxmin
+            avgtotal = avgtotal/(ranges-2)
+            avgtotal = math.ceil(avgtotal)
+        fastestinrange ="Time: {2:02}:{1:02}.{0:03} | {3} Moves".format(self.time_formatter(averaged_times[0])[0],self.time_formatter(averaged_times[0])[1],self.time_formatter(averaged_times[0])[2],fastesttimemoves)
+        formatted_avg = "Time: {2:02}:{1:02}.{0:03} | {3} Avg Moves".format(self.time_formatter(avgtotal)[0],self.time_formatter(avgtotal)[1],self.time_formatter(avgtotal)[2],avgmoves)
+        averaged_times.clear()
+        movesinrange.clear()
         return[fastestinrange,formatted_avg]
-    
+        
     def time_formatter(self,time):
         ms = time % 1000
         seconds = (time // 1000) % 60
-        minutes = (time // 60000)
+        minutes = (time//60000)
         return[ms,seconds,minutes]
