@@ -1,9 +1,10 @@
 import pygame
 import pandas
 pygame.init()
-pygame.key.set_repeat(200,100)
 import os
 import math
+from FTO import FTO
+from pathlib import Path
 
 
 
@@ -12,37 +13,40 @@ class statis():
     def __init__(self):
         self.BLACK = (0, 0, 0)
         self.font = pygame.font.Font(None, 40)
-        #triggers when an attempt is started to grab the current time as a 0 point
-        self.start_time = 0
-        #triggers when a solve is completed as the difference between current time and start time
-        self.end_time = 0
-        #used to flip between the timer running and timer stopped states
-        self.flip = 1
-        #based on the the flip state, dictates what is actually returned from the clock method
-        self.val_out = 0
-        #list of times from previous solves
-        self.sorted_time = []
+        self.start_time = 0 #triggers when an attempt is started to grab the current time as a 0 point
+        self.end_time = 0 #triggers when a solve is completed as the difference between current time and start time
+        self.started = 2 #used to flip between the timer running and timer stopped states
+        self.val_out = 0 #based on the the flip state, dictates what is actually returned from the clock method
+        self.sorted_time = [] #list of times from previous solves
         self.rawtimes = []
-        self.averaged_values = []
-        self.formatted_avg = 0
-        #iterates through for the number of items in the sorted_time list, determines how they're displayed on the screen
-        self.item = 0
-        #counts how many items are in the completed run list to keep that at 10 or below
-        self.counter = 0
+        self.fastestof12 = 0
+        self.formatted_avgof12 = 0
+        self.fastestof5 = 0
+        self.formatted_avgof5 = 0
+        self.item = 0 #iterates through for the number of items in the sorted_time list, determines how they're displayed on the screen
+        self.counter = 0 #counts how many items are in the completed run list to keep that at 10 or below
         self.avgof12 = 0
-        #counts the number of attempts for every time a new one is added to the list and numbers the times on the display
-        self.index = 0
+        self.avgof5 = 0
+        self.index = 0 #counts the number of attempts for every time a new one is added to the list and numbers the times on the display
         self.movecount = 0
         self.data_array = {"Time":[],"Moves":[]}
 
         self.scramble = [] # stores scramble for reconstruction
         self.solution = [] # stores solution for reconstruction
-    #this method tracks the overall time in the background to use when the spacebar is pressed to start and stop the timer
-    def clock(self,move,dimen):
+  
+
+    def check_solved(self,cube_status):
+        for i in range(len(cube_status)):
+            for x in range(len(cube_status[i])):
+                if cube_status[i][0] != cube_status[i][x]:
+                    return False
+        return True
+    
+    #this method tracks the overall time in the background to use when the cube is scrambled
+    def clock(self,cube_status,dimen):
         total_time = pygame.time.get_ticks()
         output_time = total_time - self.start_time
-        for event in pygame.event.get():
-            if (pygame.key.get_pressed()[pygame.K_SPACE]) & (self.flip == 0) & (event.type == pygame.KEYDOWN):
+        if self.check_solved(cube_status) == True & self.started == 1:
                 self.end_time = output_time
                 self.counter += 1
                 if self.counter > 10:
@@ -53,12 +57,14 @@ class statis():
                 self.leaderboard(self.end_time,self.movecount)
                 self.average(self.end_time,self.movecount)
                 self.val_out = 1
-                self.flip = 1
-            elif (pygame.key.get_pressed()[pygame.K_SPACE]) & (self.flip == 1) & (event.type == pygame.KEYDOWN): 
-                self.flip = 0
+                self.started = 0
+        elif self.check_solved(cube_status) == True & self.started == 0: 
+                self.started = 1
                 self.start_time = total_time
                 output_time = total_time - self.start_time
                 self.val_out = 2
+        if self.check_solved(cube_status) == True & self.started == 2:
+            self.started = 1
         if self.val_out == 1:
             self.movecount = 0
             return(int(self.end_time))
@@ -66,16 +72,17 @@ class statis():
             return(int(output_time))
         else:
             return(int(0))
+        
     #this method puts the time returned from the clock method into the correct formatting and displays it on the screen  
-    def timer(self,move,dimen):
-        time = self.clock(move,dimen)
+    def timer(self,cube_status,dimen):
+        time = self.clock(cube_status,dimen)
         ms = time % 1000
         seconds = (time // 1000) % 60
         minutes = (time//60000)
         output_string = "Time: {0:02}:{1:02}.{2:03}".format(minutes, seconds, ms)
         text = self.font.render(output_string, True, self.BLACK)
         dimen.blit(text, [20, 20])
-        pass
+
     #this method takes the time from a solve, which is received through the clock method when the timer is stopped, and puts it in the right formatting to put in the past times log
     def leaderboard(self,solve_time,movecount):
         ms = solve_time % 1000
@@ -97,37 +104,66 @@ class statis():
     #I assumed a longer method might take longer to run through and there could be other issues with running through certain lines so many times, especially if no new time is being input
     def print(self,dimen):
         self.item = 0
+        y_height = 450
         if len(self.sorted_time) > 0:
             text = self.font.render("Average of 12", True, self.BLACK)
-            dimen.blit(text, [20, 475])
+            dimen.blit(text, [20, y_height])
+            text = self.font.render("Fastest of 12", True, self.BLACK)
+            dimen.blit(text, [20, y_height + 50])
             if self.avgof12 == 12:
-                text = self.font.render(self.formatted_avg, True, self.BLACK)
-                dimen.blit(text, [20, 500])
+                text = self.font.render(self.formatted_avgof12, True, self.BLACK)
+                dimen.blit(text, [20, y_height + 25])
+                text = self.font.render(self.fastestof12, True, self.BLACK)
+                dimen.blit(text, [20, y_height + 75])
             else:
-                text = self.font.render("N/A", True, self.BLACK)
-                dimen.blit(text, [20, 500])
+                text = self.font.render("DNF", True, self.BLACK)
+                dimen.blit(text, [20, y_height + 25])
+            text = self.font.render("Average of 5", True, self.BLACK)
+            dimen.blit(text, [20, y_height + 100])
+            text = self.font.render("Fastest of 5", True, self.BLACK)
+            dimen.blit(text, [20, y_height + 150])
+            if self.avgof12 >= 5:
+                text = self.font.render(self.formatted_avgof5, True, self.BLACK)
+                dimen.blit(text, [20, y_height + 125])
+                text = self.font.render(self.fastestof5, True, self.BLACK)
+                dimen.blit(text, [20, y_height + 175])
+            else:
+                text = self.font.render("DNF", True, self.BLACK)
+                dimen.blit(text, [20, y_height + 125])
             for items in range(self.counter,0,-1):
                 self.item+=1
                 text = self.font.render(self.sorted_time[self.index - self.item], True, self.BLACK)
                 dimen.blit(text, [960, (self.item*25)])
                 if self.item > 10:
                     self.item = 10 
-        pass
+
     def average(self,solve_time,movecount):
         self.rawtimes.append(solve_time)
-        avgtotal = 0
         if self.avgof12 == 12:
-            print(self.rawtimes[:])
-            for solves in range(self.avgof12):
-                avgtotal = avgtotal + self.rawtimes[-solves]
-                self.averaged_values.append(self.rawtimes[-solves])
-            self.averaged_values = sorted(self.averaged_values)
-            maxmin = self.averaged_values[0]+self.averaged_values[11]
-            avgtotal = avgtotal - maxmin
-            avgtotal = avgtotal/10
-            avgtotal = math.ceil(avgtotal)
-            ms = avgtotal % 1000
-            seconds = (avgtotal // 1000) % 60
-            minutes = (avgtotal//60000)
-            self.formatted_avg = "Time: {0:02}:{1:02}.{2:03}".format(minutes, seconds, ms)
-        pass
+            self.formatted_avgof12 = self.uniform_avg(12)[1]
+            self.fastestof12 = self.uniform_avg(12)[0]
+        if self.avgof12 >= 5:
+            self.formatted_avgof5 = self.uniform_avg(5)[1]
+            self.fastestof5 = self.uniform_avg(5)[0]
+
+    def uniform_avg(self,ranges):
+        avgtotal = 0
+        averaged_values = []
+        for solves in range(ranges):
+            avgtotal = avgtotal + self.rawtimes[-solves]
+            averaged_values.append(self.rawtimes[-solves])
+        averaged_values = sorted(averaged_values)
+        maxmin = averaged_values[0]+averaged_values[ranges-1]
+        fastestinrange ="Time: {2:02}:{1:02}.{0:03}".format(self.time_formatter(averaged_values[0])[0],self.time_formatter(averaged_values[0])[1],self.time_formatter(averaged_values[0])[2])
+        averaged_values.clear()
+        avgtotal = avgtotal - maxmin
+        avgtotal = avgtotal/(ranges-2)
+        avgtotal = math.ceil(avgtotal)
+        formatted_avg = "Time: {2:02}:{1:02}.{0:03}".format(self.time_formatter(avgtotal)[0],self.time_formatter(avgtotal)[1],self.time_formatter(avgtotal)[2])
+        return[fastestinrange,formatted_avg]
+    
+    def time_formatter(self,time):
+        ms = time % 1000
+        seconds = (time // 1000) % 60
+        minutes = (time//60000)
+        return[ms,seconds,minutes]

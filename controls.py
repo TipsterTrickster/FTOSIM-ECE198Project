@@ -34,6 +34,7 @@ class Controls():
                 if "," in move:
                     move, layers = move.split(", ")
                     getattr(self.fto, move)(int(layers))
+                    self.stats.movecount += 1
                     self.stats.solution.append(move)
                 elif "scramble" in move:
                     if not self.scrambling:

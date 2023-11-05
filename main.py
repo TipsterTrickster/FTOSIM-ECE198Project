@@ -33,11 +33,10 @@ while True:
 
     screen.fill("white")
     fto.display(screen)
-
     # #this is for the timer itself
-    # stats.statis.timer(run1,0, screen)
+    statis.timer(run1,fto.state, screen)
     # #this is to keep the log of past times on the screen
-    # stats.statis.print(run1,screen)
+    statis.print(run1,screen)
 
 
     pygame.display.flip()
