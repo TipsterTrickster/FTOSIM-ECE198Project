@@ -6,6 +6,7 @@ class FTO():
         self.puzzleSize = 150 / 3
         self.size = size
         self.state = [[i] * self.size ** 2 for i in range(8)]
+        self.scrambled = False
         # Color Scheme: U F R L B D BR BL
         self.colorScheme = ["#FFFFFF","#00FF2F","#FF0000","#FFFF00","#298FE8","#000000","#9D00FF","#FF7700"]
 
@@ -94,7 +95,7 @@ class FTO():
         f3 = 6
 
 
-        for n in range(layers * 2):    
+        for n in range(layers * 2): # swaps bars on U BR & F faces
             for j, k in zip(range((n + 1) // 2, size), range(size - 1, (n + 1) // 2 - 1, -1)):
                 buff = self.state[f1][((j + 1) ** 2) - (n + 1)]
                 self.state[f1][((j + 1) ** 2) - (n + 1)] = self.state[f2][k ** 2 + n]
@@ -106,7 +107,7 @@ class FTO():
         f5 = 5
         f6 = 4
 
-        for j in range(0, layers):
+        for j in range(0, layers): # Swaps bars on L B & D Faces
             for i, k in zip(range(j + 1), range(j, -1, -1)):
                 buff = self.state[f4][((j + 1) ** 2 - 1) - k * 2]
                 self.state[f4][((j + 1) ** 2 - 1) - k * 2] = self.state[f5][(size - j + k) ** 2 - (2 * k + 1)]
@@ -119,12 +120,12 @@ class FTO():
                     self.state[f6][(size - 1 - j + i) ** 2 + 2 * i - 1] = buff
 
 
-        f1 = f2 = f3 = 2
-        for n in range((size // 2) * 2):    
+        f1 = 2
+        for n in range((size // 2) * 2): # Cycles pieces on R face
             for j, k in zip(range((n + 1) // 2, size), range(size - 1, (n + 1) // 2 - 1, -1)):
-                buff = self.state[f3][((size - (n + 2) // 2) ** 2) + 2 * k - n]
-                self.state[f3][((size - (n + 2) // 2) ** 2) + 2 * k - n] = self.state[f2][k ** 2 + n]
-                self.state[f2][k ** 2 + n] = self.state[f1][((j + 1) ** 2) - (n + 1)]
+                buff = self.state[f1][((size - (n + 2) // 2) ** 2) + 2 * k - n]
+                self.state[f1][((size - (n + 2) // 2) ** 2) + 2 * k - n] = self.state[f1][k ** 2 + n]
+                self.state[f1][k ** 2 + n] = self.state[f1][((j + 1) ** 2) - (n + 1)]
                 self.state[f1][((j + 1) ** 2) - (n + 1)] = buff
         
         if size % 2:
@@ -137,14 +138,8 @@ class FTO():
             self.state[f1][(size - 1) ** 2 + (size - 1)] = self.state[f1][(size // 2 + 1) ** 2 - 2]
             self.state[f1][(size // 2 + 1) ** 2 - 2] = self.state[f1][(size // 2) ** 2 + 1]
             self.state[f1][(size // 2) ** 2 + 1] = buff
-            # buff = self.state[f1][(size // 2) ** 2 + 1]
-            # self.state[f1][(size // 2) ** 2 + 1] = self.state[f1][(size // 2 + 1) ** 2 - 2]
-            # self.state[f1][(size // 2 + 1) ** 2 - 2] = self.state[f1][(size - 1) ** 2 + (size - 1)]
-            # self.state[f1][(size - 1) ** 2 + (size - 1)] = buff
 
-
-
-        if layers == size:
+        if layers == size: # If you are doing a rotation (turning all layers at once) also cycle pieces on L face
             f1 = f2 = f3 = 7
             for n in range((size // 2) * 2):    
                 for j, k in zip(range((n + 1) // 2, size), range(size - 1, (n + 1) // 2 - 1, -1)):

@@ -15,7 +15,7 @@ screen = pygame.display.set_mode((width, height))
 size = 3
 fto = FTO(size)
 
-run1 = statis()
+run1 = statis(fto)
 
 controls = Controls(fto, run1)
 
@@ -33,10 +33,10 @@ while True:
 
     screen.fill("white")
     fto.display(screen)
-    # #this is for the timer itself
-    statis.timer(run1,fto.state, screen)
-    # #this is to keep the log of past times on the screen
-    statis.print(run1,screen)
+
+
+    statis.timer(run1,fto.state, screen) #this is for the timer itself
+    statis.print(run1,screen) #this is to keep the log of past times on the screen
 
 
     pygame.display.flip()

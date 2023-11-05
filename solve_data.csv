@@ -1,9 +1,2 @@
-,Time,Moves
-0,00:01.007,8
-1,00:00.642,8
-2,00:00.592,8
-3,00:00.553,8
-4,00:00.600,8
-5,00:00.577,8
-6,00:00.584,8
-7,00:00.675,8
+,Time,Moves,Scramble,Solution
+0,00:32.633,107,B BL R Up Lp Dp Lp D Bp Rp L D R Lp BL Lp B BLp Bp Lp BL D BL Lp R D Up D BRp Bp R D BR Fp Rp Rp Dp U R L Up Rp Bp Rp R Dp BL BRp L BLp Bp D Dp Fp Rp BLp BL Dp Up BL,Uo Ro Uop Uo Ro Uop Uop BR B Ro Uop U U R Up Rp U B U Rp Up R U Rp R BRp Ro Up R Up R U Rop R U Rp Up R Up R R Up R Up Rp U R U Rp Up R Rp Up R R U Rp U R Rp Rp R R U Rp U R Up Rp Up R U Rp R Up Tp Rp L R Lp Uop Uo Uop U Dp Rp Lp R L D Uo Up Rp R Uo Up R Bp Rp B Up L Rp Lp R U R Bp Rp B Rp R U Ro Rop T Tp Rp L Rp BRp R Lp BRp BR Rp BR Rp

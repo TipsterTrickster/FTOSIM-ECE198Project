@@ -26,6 +26,7 @@ class Controls():
             move = random.choice(moves)
             getattr(self.fto, move)(random.randint(1, self.fto.size // 2))
             self.stats.scramble.append(move)
+        self.fto.scrambled = True
 
     def control(self, event): # controls for puzzle
         for key_name, move in self.key_mapping.items():
@@ -36,6 +37,8 @@ class Controls():
                     getattr(self.fto, move)(int(layers))
                     self.stats.movecount += 1
                     self.stats.solution.append(move)
+                    if self.fto.scrambled == True:
+                        self.stats.started = 1
                 elif "scramble" in move:
                     if not self.scrambling:
                         self.scrambling = True
