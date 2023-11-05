@@ -1,6 +1,7 @@
 scramble: `
 increase_size: +
 decrease_size: -
+DNF: 0
 R, 1: i
 Rp, 1: k
 U, 1: j
@@ -9,6 +10,8 @@ F, 1: h
 Fp, 1: g
 L, 1: d
 Lp, 1: e
+L, 1: D
+Lp, 1: E
 R, 2: u
 Rp, 2: m
 B, 1: w
@@ -27,3 +30,18 @@ T: p
 Tp: q
 D, 1: s
 Dp, 1: l
+F, 1: I
+Fp, 1: K
+F, 2: U
+Fp, 2: M
+U, 1: J
+Up, 1: F
+D, 1: S
+Dp, 1: L
+Uop: A
+T: P
+Tp: Q
+Ro: Y
+Rop: N
+Ro: T
+Rop: B

@@ -40,13 +40,15 @@ class Controls():
                     if self.fto.scrambled == True:
                         self.stats.started = 1
                 elif "scramble" in move:
-                    if not self.scrambling:
+                    if not self.scrambling and self.stats.started == 0:
                         self.scrambling = True
                         self.scramble()
                 elif "increase_size" in move:
                     self.fto.size += 1
                 elif "decrease_size" in move:
                     self.fto.size -= 1
+                elif "DNF" in move:
+                    self.stats.started = 2
                 else:
                     getattr(self.fto, move)()
                     self.stats.solution.append(move)
