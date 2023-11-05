@@ -3,6 +3,7 @@ import pandas
 pygame.init()
 import os
 import math
+from FTO import FTO
 from pathlib import Path
 
 
@@ -19,10 +20,16 @@ class statis():
         self.val_out = 0 #based on the the flip state, dictates what is actually returned from the clock method
         self.sorted_time = [] #list of times from previous solves
         self.rawtimes = []
+        self.moveslist = []
+        self.fastestof12list = []
+        self.movesof12list = []
         self.fastestof12 = 0
         self.formatted_avgof12 = 0
         self.fastestof5 = 0
+        self.fastestof5list = []
+        self.movesof5list = []
         self.formatted_avgof5 = 0
+        self.fastestoverall = 0
         self.item = 0 #iterates through for the number of items in the sorted_time list, determines how they're displayed on the screen
         self.counter = 0 #counts how many items are in the completed run list to keep that at 10 or below
         self.avgof12 = 0
@@ -30,7 +37,6 @@ class statis():
         self.index = 0 #counts the number of attempts for every time a new one is added to the list and numbers the times on the display
         self.movecount = 0
         self.data_array = {"Time":[],"Moves":[],"Reconstruction":[]}
-        self.moveslist = []
 
 
         self.scramble = [] # stores scramble for reconstruction
@@ -55,7 +61,7 @@ class statis():
             self.start_time = total_time # constantly update starttime
             return self.end_time
         elif self.check_solved(self.fto.state) == False and self.started == 1:
-            output_time = total_time - self.start_time
+            output_time = total_time - self.start_time 
             return output_time
         elif self.check_solved(self.fto.state) == True and self.started == 1:
                 self.end_time = output_time
@@ -66,8 +72,7 @@ class statis():
                 if self.avgof12 > 12:
                     self.avgof12 = 12
                 self.leaderboard(self.end_time,self.movecount)
-                self.average(self.end_time, self.movecount)
-                self.movecount = 0
+                self.average(self.end_time, self.movecount)  
                 self.started = 0
                 self.fto.scrambled = False
                 return self.end_time
@@ -134,7 +139,7 @@ class statis():
     #I assumed a longer method might take longer to run through and there could be other issues with running through certain lines so many times, especially if no new time is being input
     def print(self,dimen):
         self.item = 0
-        y_height = 450
+        y_height = 475
         ranges = [5,12]
         count = 0
         for number in ranges:
@@ -177,49 +182,73 @@ class statis():
         avg2 = 5
         self.rawtimes.append(solve_time)
         self.moveslist.append(movecount)
-        self.fastestoverall = self.uniform_avg(len(self.rawtimes))[0]
-        if self.avgof12 == 12:
-            self.formatted_avgof12 = self.uniform_avg(avg1)[1]
-            self.fastestof12 = self.uniform_avg(avg1)[0]
-        if self.avgof12 >= 5:
-            self.formatted_avgof5 = self.uniform_avg(avg2)[1]
-            self.fastestof5 = self.uniform_avg(avg2)[0]
+        self.fastestoverall = self.uniform_avg(self.rawtimes,self.moveslist,len(self.rawtimes))[0]
+        if self.avgof12 == avg1:
+            avgof12 = self.uniform_avg(self.rawtimes[-avg1:],self.moveslist[-avg1:],avg1)
+            self.formatted_avgof12 = avgof12[1]
+            self.fastestof12list.append(avgof12[2])
+            self.movesof12list.append(avgof12[3])
+            resultsfor12 = self.pairs(self.fastestof12list,self.movesof12list,len(self.fastestof12list))
+            fastest12time = resultsfor12[3]
+            self.fastestof12 = "Time: {2:02}:{1:02}.{0:03} | {3} Avg Moves".format(self.time_formatter(fastest12time)[0],self.time_formatter(fastest12time)[1],self.time_formatter(fastest12time)[2],resultsfor12[0])
+        if self.avgof12 >= avg2:
+            avgof5 = self.uniform_avg(self.rawtimes[-avg2:],self.moveslist[-avg2:],avg2)
+            self.formatted_avgof5 = avgof5[1]
+            self.fastestof5list.append(avgof5[2])
+            self.movesof5list.append(avgof5[3])
+            resultsfor5 = self.pairs(self.fastestof5list,self.movesof5list,len(self.fastestof5list))
+            fastest5time = resultsfor5[3]
+            self.fastestof5 = "Time: {2:02}:{1:02}.{0:03} | {3} Avg Moves".format(self.time_formatter(fastest5time)[0],self.time_formatter(fastest5time)[1],self.time_formatter(fastest5time)[2],resultsfor5[0])
 
-    def uniform_avg(self,ranges):
+
+    def uniform_avg(self,times,moves,ranges):
         avgtotal = 0
         avgmoves = 0
         averaged_times = []
         movesinrange = []
-        pairs = []
         for solves in range(ranges):
-            avgtotal = avgtotal + self.rawtimes[-solves]
-            avgmoves = avgmoves + self.moveslist[-solves]
-            averaged_times.append(self.rawtimes[-solves])
-            movesinrange.append(self.moveslist[-solves])
-        pairs.append(averaged_times)
-        pairs.append(movesinrange)
-        averaged_times = sorted(averaged_times)
-        for i in range(ranges):
-            if pairs[0][i] == averaged_times[0]:
-                fastesttimemoves = pairs[1][i]
-            if pairs[0][i] == averaged_times[ranges-1]:
-                slowesttimemoves = pairs[1][i]
-        maxmin = averaged_times[0]+averaged_times[ranges-1]
+            avgtotal = avgtotal + times[-solves]
+            avgmoves = avgmoves + moves[-solves]
+            averaged_times.append(times[-solves])
+            movesinrange.append(moves[-solves])
+        results = self.pairs(averaged_times,movesinrange,ranges)
+        slowesttimemoves = results[1]
+        fastesttimemoves = results[0]
         if ranges > 2:
             avgmoves = avgmoves - slowesttimemoves - fastesttimemoves
             avgmoves = avgmoves/(ranges-2)
             avgmoves = math.ceil(avgmoves)
-            avgtotal = avgtotal - maxmin
+            avgtotal = avgtotal - results[2]
             avgtotal = avgtotal/(ranges-2)
             avgtotal = math.ceil(avgtotal)
-        fastestinrange ="Time: {2:02}:{1:02}.{0:03} | {3} Moves".format(self.time_formatter(averaged_times[0])[0],self.time_formatter(averaged_times[0])[1],self.time_formatter(averaged_times[0])[2],fastesttimemoves)
+        fastestinrange ="Time: {2:02}:{1:02}.{0:03} | {3} Moves".format(self.time_formatter(results[3])[0],self.time_formatter(results[3])[1],self.time_formatter(results[3])[2],fastesttimemoves)
         formatted_avg = "Time: {2:02}:{1:02}.{0:03} | {3} Avg Moves".format(self.time_formatter(avgtotal)[0],self.time_formatter(avgtotal)[1],self.time_formatter(avgtotal)[2],avgmoves)
         averaged_times.clear()
         movesinrange.clear()
-        return[fastestinrange,formatted_avg]
+        return[fastestinrange,formatted_avg,avgtotal,avgmoves]
         
     def time_formatter(self,time):
         ms = time % 1000
         seconds = (time // 1000) % 60
         minutes = (time//60000)
         return[ms,seconds,minutes]
+    
+    def pairs(self,timelist,moveslist,ranges):
+        pairslist = []
+        pairslist.append(timelist)
+        pairslist.append(moveslist)
+        timelist = sorted(timelist)
+        fastesttime = 0
+        for i in range(ranges):
+            if pairslist[0][i-1] == timelist[0]:
+                fastesttimemoves = pairslist[1][i-1]
+                break
+        for i in range(ranges):
+            if pairslist[0][i-1] == timelist[-1]:
+                slowesttimemoves = pairslist[1][i-1]
+                break
+        fastesttime = timelist[0]
+        maxmin = timelist[0] + timelist[-1]
+        pairslist.clear()
+        timelist.clear()
+        return[fastesttimemoves, slowesttimemoves, maxmin, fastesttime]
