@@ -1,3 +1,6 @@
+scramble: K_BACKQUOTE
+increase_size: K_1
+decrease_size: K_2
 R, 1: K_i
 Rp, 1: K_k
 U, 1: K_j
@@ -10,10 +13,10 @@ R, 2: K_u
 Rp, 2: K_m
 B, 1: K_w
 Bp, 1: K_o
-BL, 1: K_1
-BLp, 1: K_2
-BR, 1: K_3
-BRp, 1: K_4
+BL, 1: K_c
+BLp, 1: K_3
+BR, 1: K_8
+BRp, 1: K_COMMA
 Ro: K_y
 Rop: K_n
 Ro: K_t

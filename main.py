@@ -6,8 +6,6 @@ import sys
 from FTO import FTO
 from controls import Controls
 import stats
-import scrambler
-
 
 # pygame setup
 pygame.init()
@@ -19,18 +17,19 @@ size = 3
 fto = FTO(size)
 controls = Controls(fto)
 
-
 run1 = stats.statis()
-
-key_states = {}
 
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
 
         if event.type == pygame.KEYDOWN:
-            controls.control(event)
+            try:
+                controls.control(event)
+            except:
+                print("Invalid Move Mapping")
 
+    controls.scrambling = False
 
     screen.fill("white")
     fto.display(screen)

@@ -12,10 +12,10 @@ class FTO():
 
     @property
     def size(self):
-        return self._size
+        return self._size # getter for size
     
     @size.setter
-    def size(self, size):
+    def size(self, size): # setter for size
         self._size = size
         self.puzzleSize = 150 / size
         self.state = [[i] * size ** 2 for i in range(8)]
@@ -42,7 +42,7 @@ class FTO():
         else:
             raise "Invalid orientation"
 
-    def display(self, surface):
+    def display(self, surface): # method to display the puzzle on screen
         x = surface.get_width() // 2
         y = surface.get_height() // 2
         size = self.puzzleSize
@@ -86,7 +86,7 @@ class FTO():
         1 2 3    
           0
     """
-    def R(self, layers):
+    def R(self, layers): # preforms a clockwise R move on the FTO
         size = self.size
 
         f1 = 0
@@ -132,12 +132,17 @@ class FTO():
             self.state[f1][(size // 2) ** 2] = self.state[f1][(size // 2 + 1) ** 2 - 1]
             self.state[f1][(size // 2 + 1) ** 2 - 1] = self.state[f1][(size - 1) ** 2 + (size - 1)]
             self.state[f1][(size - 1) ** 2 + (size - 1)] = buff
-
         else:
-            buff = self.state[f1][(size // 2) ** 2 + 1]
-            self.state[f1][(size // 2) ** 2 + 1] = self.state[f1][(size // 2 + 1) ** 2 - 2]
-            self.state[f1][(size // 2 + 1) ** 2 - 2] = self.state[f1][(size - 1) ** 2 + (size - 1)]
-            self.state[f1][(size - 1) ** 2 + (size - 1)] = buff
+            buff = self.state[f1][(size - 1) ** 2 + (size - 1)]
+            self.state[f1][(size - 1) ** 2 + (size - 1)] = self.state[f1][(size // 2 + 1) ** 2 - 2]
+            self.state[f1][(size // 2 + 1) ** 2 - 2] = self.state[f1][(size // 2) ** 2 + 1]
+            self.state[f1][(size // 2) ** 2 + 1] = buff
+            # buff = self.state[f1][(size // 2) ** 2 + 1]
+            # self.state[f1][(size // 2) ** 2 + 1] = self.state[f1][(size // 2 + 1) ** 2 - 2]
+            # self.state[f1][(size // 2 + 1) ** 2 - 2] = self.state[f1][(size - 1) ** 2 + (size - 1)]
+            # self.state[f1][(size - 1) ** 2 + (size - 1)] = buff
+
+
 
         if layers == size:
             f1 = f2 = f3 = 7
@@ -160,18 +165,18 @@ class FTO():
                 self.state[f1][(size // 2 + 1) ** 2 - 2] = self.state[f1][(size // 2) ** 2 + 1]
                 self.state[f1][(size // 2) ** 2 + 1] = buff
 
-    def Rp(self, layers):
+    def Rp(self, layers): # perfroms counterclockwise R move on FTO
         self.R(layers)
         self.R(layers)
 
-    def Ro(self):
+    def Ro(self): # performs R rotation on the puzzle
         self.R(self.size)
     
-    def Rop(self):
+    def Rop(self): # performs counterclockwise R rotation on the puzzle
         self.Ro()
         self.Ro()
 
-    def T(self):
+    def T(self): # performs T rotation on the puzzle
         for j in range(self.size):
             for i in range(j * 2 + 1):
                 buff = self.state[0][(j ** 2) + i]
@@ -186,10 +191,12 @@ class FTO():
                 self.state[5][(j ** 2) + i] = self.state[6][((j + 1) ** 2) - (i + 1)]
                 self.state[6][((j + 1) ** 2) - (i + 1)] = buff
 
-    def Tp(self):
+    def Tp(self): # performs counterclockwise T rotation on the puzz;e
         self.T()
         self.T()
         self.T()
+
+    # rest of the moves are defined by moves above
 
     def U(self, layers):
         self.T()

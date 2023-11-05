@@ -34,6 +34,8 @@ class statis():
         self.index = 0
         self.movecount = 0
         self.data_array = {"Time":[],"Moves":[]}
+        self.scramble = []
+        self.solution = []
     #this method tracks the overall time in the background to use when the spacebar is pressed to start and stop the timer
     def clock(self,move,dimen):
         total_time = pygame.time.get_ticks()
