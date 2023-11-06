@@ -11,7 +11,7 @@ class Controls():
         self.stats = Stats
         self.key_mapping = {}
         self.scrambling = False
-
+        self.added_layers = 0
         p = Path(__file__).with_name("key_binds.txt")
         with p.open('r') as file:
             for line in file:
@@ -34,9 +34,9 @@ class Controls():
             if event.unicode == key_name:
                 if "," in move:
                     move, layers = move.split(", ")
-                    getattr(self.fto, move)(int(layers))
+                    getattr(self.fto, move)(int(layers) + self.added_layers)
                     self.stats.movecount += 1
-                    self.stats.solution.append(move + str(layers))
+                    self.stats.solution.append(move + str(int(layers) + self.added_layers))
                     if self.fto.scrambled == True:
                         self.stats.started = 1
                 elif "scramble" in move:
@@ -49,6 +49,10 @@ class Controls():
                     self.fto.size -= 1
                 elif "DNF" in move:
                     self.stats.started = 2
+                elif "increase_layer" in move:
+                    self.added_layers += 1
+                elif "decrease_layer" in move:
+                    self.added_layers -= 1
                 else:
                     getattr(self.fto, move)()
                     self.stats.solution.append(move)

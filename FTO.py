@@ -17,9 +17,12 @@ class FTO():
     
     @size.setter
     def size(self, size): # setter for size
-        self._size = size
-        self.puzzleSize = 150 / size
-        self.state = [[i] * size ** 2 for i in range(8)]
+        if size < 1:
+            print("invalid size")
+        else:
+            self._size = size
+            self.puzzleSize = 150 / size
+            self.state = [[i] * size ** 2 for i in range(8)]
 
 
     # orientation, 0 -> U, 1 -> D, 2 -> R, 3 -> L where triangle starts at point and goes in orientation directon
@@ -127,6 +130,7 @@ class FTO():
                 self.state[f1][((size - (n + 2) // 2) ** 2) + 2 * k - n] = self.state[f1][k ** 2 + n]
                 self.state[f1][k ** 2 + n] = self.state[f1][((j + 1) ** 2) - (n + 1)]
                 self.state[f1][((j + 1) ** 2) - (n + 1)] = buff
+
         
         if size % 2:
             buff = self.state[f1][(size // 2) ** 2]
@@ -138,6 +142,7 @@ class FTO():
             self.state[f1][(size - 1) ** 2 + (size - 1)] = self.state[f1][(size // 2 + 1) ** 2 - 2]
             self.state[f1][(size // 2 + 1) ** 2 - 2] = self.state[f1][(size // 2) ** 2 + 1]
             self.state[f1][(size // 2) ** 2 + 1] = buff
+
 
         if layers == size: # If you are doing a rotation (turning all layers at once) also cycle pieces on L face
             f1 = f2 = f3 = 7

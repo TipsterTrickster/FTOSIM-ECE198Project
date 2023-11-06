@@ -1,6 +1,8 @@
 scramble: `
 increase_size: +
 decrease_size: -
+increase_layer: 2
+decrease_layer: 1
 DNF: 0
 R, 1: i
 Rp, 1: k
