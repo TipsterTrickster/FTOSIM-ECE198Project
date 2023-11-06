@@ -91,20 +91,16 @@ class statis():
     #this method puts the time returned from the clock method into the correct formatting and displays it on the screen  
     def timer(self,cube_status,dimen):
         time = self.clock(cube_status,dimen)
-        ms = time % 1000
-        seconds = (time // 1000) % 60
-        minutes = (time//60000)
-        output_string = "Time: {0:02}:{1:02}.{2:03}".format(minutes, seconds, ms)
+        formatted_time = self.time_formatter(time)
+        output_string = "Time: {0:02}:{1:02}.{2:03}".format(formatted_time[2], formatted_time[1],formatted_time[0])
         text = self.font.render(output_string, True, "Black")
         dimen.blit(text, [20, 20])
 
     #this method takes the time from a solve, which is received through the clock method when the timer is stopped, and puts it in the right formatting to put in the past times log
     def leaderboard(self,solve_time,movecount):
-        ms = solve_time % 1000
-        seconds = (solve_time // 1000) % 60
-        minutes = (solve_time//60000)
+        formatted_time = self.time_formatter(solve_time)
         self.index+=1
-        time_format = "{0:02}:{1:02}.{2:03}".format(minutes,seconds,ms)
+        time_format = "{0:02}:{1:02}.{2:03}".format(formatted_time[2],formatted_time[1],formatted_time[0])
         self.data_array["Time"].append(time_format)
         self.data_array["Moves"].append(movecount)
         for move in self.scramble:
@@ -137,13 +133,11 @@ class statis():
         # self.data_array["Solution"].append(' '.join(self.solution))
         df = pandas.DataFrame(self.data_array)
         df.to_csv(os.path.join(r'solve_data.csv')) 
-        printed = "{3:01}. {0:02}:{1:02}.{2:03} | {4:01} Moves".format(minutes,seconds,ms,self.index,movecount)
+        printed = "{3:01}. {0:02}:{1:02}.{2:03} | {4:01} Moves".format(formatted_time[2],formatted_time[1],formatted_time[0],self.index,movecount)
         self.sorted_time.append(printed) 
         pass
     
-    #this method takes the list of previous times from the leaderboard method and actually renders them on the screen. I didn't combine the two because
-    #I wanted a shorter method for actually rendering them since this has to be called hundreds of times per second to refresh it on the screen since the screen has to be refreshed
-    #I assumed a longer method might take longer to run through and there could be other issues with running through certain lines so many times, especially if no new time is being input
+    #this method takes the list of previous times from the leaderboard method along with all the averages values from the Averages method and actually renders them on the screen.
     def print(self,dimen):
         self.item = 0
         y_height = 475
@@ -186,7 +180,7 @@ class statis():
                 dimen.blit(text, [960, (self.item*25)])
                 if self.item > 10:
                     self.item = 10 
-
+    #this method takes the raw (unformatted) time and move count from a finished attempt and initially just runs them through a method 
     def average(self, solve_time, movecount):
         avg1 = 12
         avg2 = 5
