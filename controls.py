@@ -20,6 +20,7 @@ class Controls():
 
     def scramble(self): # method to scramble the puzzle using random moves
         self.fto.size = self.fto.size
+        self.stats.reconstruction = "https://alpha.twizzle.net/explore/?puzzle=FTO&alg="
         self.stats.scramble = []
         self.stats.solution = []
         moves = ["R", "Rp", "U", "Up", "F", "Fp", "L", "Lp", "D", "Dp", "B", "Bp", "BL", "BLp", "BR", "BRp"]
