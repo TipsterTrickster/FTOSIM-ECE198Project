@@ -19,6 +19,7 @@ class Controls():
                 self.key_mapping[key] = move
 
     def scramble(self): # method to scramble the puzzle using random moves
+        self.fto.size = self.fto.size
         self.stats.scramble = []
         self.stats.solution = []
         moves = ["R", "Rp", "U", "Up", "F", "Fp", "L", "Lp", "D", "Dp", "B", "Bp", "BL", "BLp", "BR", "BRp"]

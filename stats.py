@@ -79,7 +79,7 @@ class statis():
                 self.fto.scrambled = False
                 return self.end_time
         elif self.started == 2:
-                self.fto.size = 3
+                self.fto.size = self.fto.size
                 self.movecount = 0
                 self.started = 0
                 self.fto.scrambled = False
