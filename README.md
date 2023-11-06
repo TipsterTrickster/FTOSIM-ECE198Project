@@ -1,6 +1,5 @@
 # FTOSIM-ECE198Project
 
-This project is an nxn FTO simulator.
 
 This project is an nxn FTO simulator.
 
