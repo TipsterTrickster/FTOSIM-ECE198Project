@@ -30,6 +30,7 @@ class statis():
         self.movesof5list = []
         self.formatted_avgof5 = 0
         self.fastestoverall = 0
+        self.tps = 0
         self.item = 0 #iterates through for the number of items in the sorted_time list, determines how they're displayed on the screen
         self.counter = 0 #counts how many items are in the completed run list to keep that at 10 or below
         self.avgof12 = 0
@@ -176,6 +177,9 @@ class statis():
             else:
                 text = self.font.render("DNF", True, "Black")
                 dimen.blit(text, [20, y_height + 125])
+            tps = "Turns Per Second:{0:03}".format(self.tps)
+            text = self.font.render(tps, True, "Black")
+            dimen.blit(text, [20, 45])
             for items in range(self.counter,0,-1):
                 self.item+=1
                 text = self.font.render(self.sorted_time[self.index - self.item], True, "Black")
@@ -188,6 +192,7 @@ class statis():
         avg2 = 5
         self.rawtimes.append(solve_time)
         self.moveslist.append(movecount)
+        self.tps = round(self.moveslist[-1]/(self.rawtimes[-1]/1000),3)
         self.fastestoverall = self.uniform_avg(self.rawtimes,self.moveslist,len(self.rawtimes))[0]
         if self.avgof12 == avg1:
             avgof12 = self.uniform_avg(self.rawtimes[-avg1:],self.moveslist[-avg1:],avg1)
