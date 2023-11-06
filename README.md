@@ -1,5 +1,6 @@
 # FTOSIM-ECE198Project
 
+This project is an nxn FTO simulator.
 
 This project is an nxn FTO simulator.
 
@@ -15,6 +16,7 @@ Features:
 - Displays Best Single, Ao5 & Ao12
 - Remappable Keybinds
 
+We made a simulator that will perform certain moves based off of keyboard input, and is scalable to any size!
 
 Requirement:
 Pygame and Pandas are required to run this program
