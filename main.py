@@ -1,6 +1,4 @@
 import pygame
-import numpy as np
-import pandas as pd
 import sys
 from FTO import FTO
 from controls import Controls
